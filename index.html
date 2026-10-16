@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Family House Builder</title>
+<style>
+  :root {
+    --pink: #ff8fb8;
+    --lavender: #c9b6ff;
+    --mint: #7eddc2;
+    --soft-bg: #fff5f8;
+    --text: #4a3c6b;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Nunito', 'Avenir Next Rounded', system-ui, sans-serif;
+    background: linear-gradient(135deg, var(--soft-bg), #f0e6ff);
+    color: var(--text);
+    margin: 0;
+    padding: 20px;
+    min-height: 100vh;
+  }
+  h1 {
+    text-align: center;
+    font-size: 2.5rem;
+    color: var(--pink);
+    text-shadow: 2px 2px 0 var(--lavender);
+    margin-bottom: 10px;
+  }
+  .subtitle {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 1.2rem;
+  }
+  .characters {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+  .char-btn {
+    background: white;
+    border: 4px solid var(--lavender);
+    border-radius: 20px;
+    padding: 15px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    text-align: center;
+    min-width: 100px;
+    font-size: 1.1rem;
+    font-weight: bold;
+  }
+  .char-btn:hover, .char-btn.selected {
+    transform: scale(1.05);
+    box-shadow: 0 8px 16px rgba(201, 182, 255, 0.4);
+    border-color: var(--pink);
+  }
+  .char-btn .avatar {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 5px;
+  }
+  .game-area {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .toolbox {
+    background: white;
+    border-radius: 20px;
+    padding: 15px;
+    border: 3px solid var(--mint);
+    min-width: 200px;
+    max-width: 250px;
+  }
+  .toolbox h3 {
+    margin-top: 0;
+    color: var(--mint);
+    text-align: center;
+  }
+  .item {
+    background: #f8f8ff;
+    border: 2px dashed var(--lavender);
+    border-radius: 12px;
+    padding: 10px;
+    margin: 8px 0;
+    cursor: grab;
+    text-align: center;
+    font-size: 2rem;
+    user-select: none;
+  }
+  .item:active { cursor: grabbing; }
+  .house {
+    background: #e8f5e9;
+    border: 6px solid #8bc34a;
+    border-radius: 15px;
+    width: 600px;
+    height: 500px;
+    position: relative;
+    overflow: hidden;
+    background-image: 
+      linear-gradient(#c8e6c9 1px, transparent 1px),
+      linear-gradient(90deg, #c8e6c9 1px, transparent 1px);
+    background-size: 40px 40px;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.05);
+  }
+  .placed {
+    position: absolute;
+    cursor: move;
+    font-size: 2.5rem;
+    user-select: none;
+    z-index: 10;
+  }
+  .placed.character {
+    font-size: 3.5rem;
+    z-index: 20;
+  }
+  .controls {
+    text-align: center;
+    margin-top: 20px;
+  }
+  button {
+    background: var(--pink);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    padding: 12px 24px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    margin: 0 10px;
+    box-shadow: 0 4px 0 #e06a9a;
+  }
+  button:hover { transform: translateY(-2px); }
+  button:active { transform: translateY(2px); box-shadow: none; }
+  .selected-char {
+    text-align: center;
+    font-size: 1.3rem;
+    margin: 10px 0;
+    min-height: 2rem;
+  }
+</style>
+</head>
+<body>
+  <h1>🏡 Family House Builder</h1>
+  <p class="subtitle">Pick your character and drag rooms, furniture, and decorations to build your dream house!</p>
+
+  <div class="characters">
+    <div class="char-btn" data-char="daddy" data-emoji="👨">
+      <span class="avatar">👨</span>
+      Daddy
+    </div>
+    <div class="char-btn" data-char="gus" data-emoji="👦">
+      <span class="avatar">👦</span>
+      Gus
+    </div>
+    <div class="char-btn" data-char="toby" data-emoji="🧒">
+      <span class="avatar">🧒</span>
+      Toby
+    </div>
+    <div class="char-btn" data-char="mommy" data-emoji="👩">
+      <span class="avatar">👩</span>
+      Mommy
+    </div>
+    <div class="char-btn" data-char="eliza" data-emoji="👧">
+      <span class="avatar">👧</span>
+      Eliza
+    </div>
+  </div>
+
+  <div class="selected-char" id="selectedChar">Choose a character to place in your house!</div>
+
+  <div class="game-area">
+    <div class="toolbox">
+      <h3>📦 Building Blocks</h3>
+      <div class="item" draggable="true" data-type="bed" data-emoji="🛏️">🛏️ Bed</div>
+      <div class="item" draggable="true" data-type="sofa" data-emoji="🛋️">🛋️ Sofa</div>
+      <div class="item" draggable="true" data-type="table" data-emoji="🪑">🪑 Table</div>
+      <div class="item" draggable="true" data-type="tree" data-emoji="🌳">🌳 Tree</div>
+      <div class="item" draggable="true" data-type="flower" data-emoji="🌸">🌸 Flower</div>
+      <div class="item" draggable="true" data-type="star" data-emoji="⭐">⭐ Star</div>
+      <div class="item" draggable="true" data-type="heart" data-emoji="💖">💖 Heart</div>
+      <div class="item" draggable="true" data-type="car" data-emoji="🚗">🚗 Car</div>
+    </div>
+
+    <div class="house" id="house">
+      <!-- Placed items go here -->
+    </div>
+  </div>
+
+  <div class="controls">
+    <button id="clearBtn">🗑️ Clear House</button>
+    <button id="saveBtn">💾 Save Picture</button>
+  </div>
+
+  <script>
+    const house = document.getElementById('house');
+    const selectedCharDiv = document.getElementById('selectedChar');
+    let currentChar = null;
+    let currentEmoji = null;
+    let dragOffsetX = 0;
+    let dragOffsetY = 0;
+    let dragging = null;
+
+    // Character selection
+    document.querySelectorAll('.char-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.char-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        currentChar = btn.dataset.char;
+        currentEmoji = btn.dataset.emoji;
+        selectedCharDiv.textContent = `You chose ${btn.textContent.trim()}! Drag them onto the house.`;
+      });
+    });
+
+    // Drag from toolbox
+    document.querySelectorAll('.item').forEach(item => {
+      item.addEventListener('dragstart', (e) => {
+        e.dataTransfer.setData('type', item.dataset.type);
+        e.dataTransfer.setData('emoji', item.dataset.emoji);
+        e.dataTransfer.setData('isChar', 'false');
+      });
+    });
+
+    // Drag character (when selected)
+    document.querySelectorAll('.char-btn').forEach(btn => {
+      btn.addEventListener('dragstart', (e) => {
+        if (btn.classList.contains('selected')) {
+          e.dataTransfer.setData('type', 'character');
+          e.dataTransfer.setData('emoji', btn.dataset.emoji);
+          e.dataTransfer.setData('isChar', 'true');
+        }
+      });
+      btn.draggable = true;
+    });
+
+    house.addEventListener('dragover', (e) => {
+      e.preventDefault();
+    });
+
+    house.addEventListener('drop', (e) => {
+      e.preventDefault();
+      const type = e.dataTransfer.getData('type');
+      const emoji = e.dataTransfer.getData('emoji');
+      const isChar = e.dataTransfer.getData('isChar') === 'true';
+      if (!emoji) return;
+
+      const rect = house.getBoundingClientRect();
+      const x = e.clientX - rect.left - 20;
+      const y = e.clientY - rect.top - 20;
+
+      placeItem(emoji, x, y, isChar);
+    });
+
+    function placeItem(emoji, x, y, isChar) {
+      const el = document.createElement('div');
+      el.className = 'placed' + (isChar ? ' character' : '');
+      el.textContent = emoji;
+      el.style.left = Math.max(0, Math.min(x, 550)) + 'px';
+      el.style.top = Math.max(0, Math.min(y, 450)) + 'px';
+      el.draggable = true;
+
+      el.addEventListener('dragstart', (e) => {
+        dragging = el;
+        const rect = el.getBoundingClientRect();
+        dragOffsetX = e.clientX - rect.left;
+        dragOffsetY = e.clientY - rect.top;
+        e.dataTransfer.setData('moving', 'true');
+      });
+
+      house.appendChild(el);
+    }
+
+    // Move existing items
+    house.addEventListener('dragover', (e) => e.preventDefault());
+    house.addEventListener('drop', (e) => {
+      if (e.dataTransfer.getData('moving') === 'true' && dragging) {
+        e.preventDefault();
+        const rect = house.getBoundingClientRect();
+        const x = e.clientX - rect.left - dragOffsetX;
+        const y = e.clientY - rect.top - dragOffsetY;
+        dragging.style.left = Math.max(0, Math.min(x, 550)) + 'px';
+        dragging.style.top = Math.max(0, Math.min(y, 450)) + 'px';
+        dragging = null;
+      }
+    });
+
+    // Clear
+    document.getElementById('clearBtn').addEventListener('click', () => {
+      house.innerHTML = '';
+    });
+
+    // Simple save as image (using html2canvas if available, else alert)
+    document.getElementById('saveBtn').addEventListener('click', () => {
+      alert('Take a screenshot to save your house! Or we can add a real save later.');
+    });
+  </script>
+</body>
+</html>
